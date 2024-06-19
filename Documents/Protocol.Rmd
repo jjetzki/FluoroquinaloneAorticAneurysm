@@ -529,7 +529,7 @@ OMOP Concept ID     Outcome Name
 
 Characterizing the cohort:  
 
-All analyses will be performed using code developed for the OHDSI Methods library. The code for this study can be found at A diagnostic package, built off the OHDSI Cohort Diagnostics library, is included in the base package as a preliminary step to assess the fitness of use of phenotypes on your database. If a database passes cohort diagnostics, the full study package will be executed. Baseline covariates will be extracted using an optimized SQL extraction script based on principles of the Feature Extraction package () to quantify Demographics (Gender, Prior Observation Time, Age Group), Condition Group Eras and Drug Group Eras (at the above-listed time windows). Additional cohort-specific covariates will be constructed using OMOP standard vocabulary concepts. 
+All analyses will be performed using code developed for the OHDSI Methods library. The code for this study can be found at A diagnostic package, built off the OHDSI Cohort Diagnostics library, is included in the base package as a preliminary step to assess the fitness of use of phenotypes on your database. If a database passes cohort diagnostics, the full study package will be executed. Baseline covariates will be extracted using an optimized SQL extraction script based on principles of the Feature Extraction package to quantify Demographics (Gender, Prior Observation Time, Age Group), Condition Group Eras and Drug Group Eras (at the above-listed time windows). Additional cohort-specific covariates will be constructed using OMOP standard vocabulary concepts. 
 
 
 
@@ -555,12 +555,13 @@ A Bayesian random-effects meta-analysis will be conducted to combine each sites 
 Analyses using observational data can produce misleading estimates as a result of study design and analytic choices. We will implement several study diagnostics using pre-specified decision thresholds to evaluate the reliability of our analyses. These study diagnostics will assist with understanding the risk of bias and generalizability of the estimates generated in each database across the network of databases involved in the study. Only results that passed the pre-specified thresholds set for each diagnostics will contribute to the meta-analytic estimates. 
 
 ###Covariate balance
-We will implement propensity score matching to account for confounding between treatment groups. Propensity score models will include covariates such as age, race, medications, medical conditions, procedure exposure, medical exposure, and laboratory values. The number of covariates to be included will be between 10,000 to 100,000. Covariate use behaviours over the 30 to 365 days prior to index date will be utliised for PS model calculation.
+We will implement propensity score matching to account for confounding between treatment groups. Propensity score models will include covariates such as age, race, medications, medical conditions, procedure exposure, medical exposure, and laboratory values. All covariates will be included, we expect that the number of covariates to be included will be between 10,000 to 100,000. We will use a 30 day and a 365 day time windoe prior to index date to calculate the occurrence of each covariate. 
 
-Large-scale regularized regression will be used to fit the propensity model. Separate PS models will be constructed for each comparator. Patients will be matched 1:1 between the target and comparator cohorts. 
+Large-scale regularized regression will be used to fit the propensity model including all covariates. Separate PS models will be constructed for each comparator. Patients will be matched 1:1 between the target and comparator cohorts. 
 
 To determine whether the PS matching is sufficient to balance baseline patient characteristics we will calculate the standardised mean difference between treatment cohorts after propensity score matching. Covariate balance diagnostic will be achieved if all SMDs of predefined covariates below are less than 0.1.  
 
+The list of covariates is provided here:
 
 Age group: Age was grouped in 5-year intervals 
 
@@ -586,17 +587,19 @@ Overall systematic error will be calculated as the Expected Absolute Systematic 
 
 If EASE score is low, then calibrated and uncalibrated estimates (hazard ratios, p-values, confidence intervals) will be similar indicating little to no systematic error or unmeasured confounding that is not being accounted for in the results of the study. The systematic bias diagnostic will be achieved if the EASE value was less than 0.25. 
 
-Study diagnostics: Overall an analysis was considered to have passed study diagnostics if SMDs of predefined covariates were less than 0.1, equipoise was greater than 0.2 and EASE was less than 0.25. 
+Overall an individual analysis was considered to have passed study diagnostics if 1) SMDs of predefined covariates were less than 0.1, and 2) equipoise was greater than 0.2 and 3) EASE was less than 0.25. 
 
 
 # Sample Size and Study Power {#sample-size}
 
 Sample size and study power will be calculated based on the number of patients included from the databases passing diagnostics and patients prescribed exposure drug (FQ) and comparators (CPH or TMP) for treatment of UTI. 
 
+The study packages are designed to suppress any analyses which have less than 140 unique persons. This cut point was informed by a power calculation performed by the OHDSI COVID Consortia to assess the computational cut point of when a cell count would be too small to merit additional subdivision within the target-stratum-feature combination. This means that each data owner will only generate results for target-stratum-feature pairs that meet this minimum threshold.  
+
 # Strengths and Limitations {#strengths-limitations}
 
 ##Strengths
-This large-scale distributed network study wil' use a rigorous design with objective diagnostics to reduce bias and confounding. The study design ensures transparency, reproducibility and reliability of results. 
+This large-scale distributed network study will' use a rigorous design with objective diagnostics to reduce bias and confounding. The study design ensures transparency, reproducibility and reliability of results. 
 
 To minimize confounding by indication, we will restrict the analysis to patients treated in an outpatient setting for UTIs, which are commonly localized, well-characterized infections with a similar severity profile across presentations.
 
@@ -604,9 +607,9 @@ We will use this detailed protocol with standardized definitions of exposures, o
 
 We will also use a standardized analytic package to generate the analytic results within each of the participating databases. 
 
-Our approach also mirrors that of a hypothetical randomized controlled trial by employing a new-user, active comparator design with clearly defined indications and we will implmement an outcome-agnostic, data-driven PS model, modelled using large-scale regularised regression. 
+Our approach also mirrors that of a hypothetical randomized controlled trial by employing a new-user, active comparator design with clearly defined indications and we will implement an outcome-agnostic, data-driven PS model, modeled using large-scale regularized regression. 
 
-We will also apply the suite of predefined objective diagnostics as described above to esnure the quality of evidence focusing on sufficient covaraiate balance, overlap in preference score distributions, and minimal systematic error as evluated by a comprehensive set of negative control outcomes. 
+We will also apply the suite of predefined objective diagnostics as described above to ensure the quality of evidence focusing on sufficient covariate balance, overlap in preference score distributions, and minimal systematic error as evaluated by a comprehensive set of negative control outcomes. 
 
 Only analyses that pass all objective diagnostic tests will be included in the meta-analysis. 
 
@@ -619,7 +622,7 @@ Antibiotics are usually used for a short period of time to treat UTIs, therefore
 
 Regulatory warnings about the use of FQs during the study may affect results, however the majority of the study period is before such warnings were made. 
 
-We are unable to consider the dose of FQ or comparator antibiotics in this study. As the critiera for antibiotic dosage and duration are well established in outpatient UTIs, it is likely that variation in dose would be small, however we are unable to determine whether there is a dose-response relationship. 
+We are unable to consider the dose of FQ or comparator antibiotics in this study. As the criteria for antibiotic dosage and duration are well established in outpatient UTIs, it is likely that variation in dose would be small, however we are unable to determine whether there is a dose-response relationship. 
 
 # Protection of Human Subjects
 
@@ -631,9 +634,8 @@ N/A
 
 # Plans for Disseminating and Communicating Study Results
 
-Share results and study design at OHDSI conferences.
+The results will be shared and discussed among study collaborators during the study. Study results will be posted on the OHDSI website (https://data.ohdsi.org/) after completion of the study. The results will also be presented at the OHDSI in-person or virtual events. Finally, we plan to publish this research as a scientific manuscript in a high-impact journal
 
-Share primary results in high-impact journal. 
 
 \clearpage
 
